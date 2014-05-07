@@ -2,6 +2,7 @@ import ij.ImagePlus;
 
 import java.awt.Color;
 import java.awt.Dialog.ModalityType;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 
@@ -40,6 +41,10 @@ import engine.Imagen;
 import engine.Objeto;
 
 import java.awt.Toolkit;
+
+import javax.swing.border.BevelBorder;
+import javax.swing.BoxLayout;
+import javax.swing.JSeparator;
 
 
 public class main {
@@ -116,6 +121,17 @@ public class main {
 			}
 		});
 		mnAyuda.add(mntmAcercaDe);
+		
+		JPanel statusPanel = new JPanel();
+		statusPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		frmMeatAnalyzer.getContentPane().add(statusPanel, BorderLayout.SOUTH);
+		statusPanel.setPreferredSize(new Dimension(frmMeatAnalyzer.getWidth(),16));
+		statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.X_AXIS));
+
+		
+		JLabel lblNewLabel = new JLabel("   Barra de estado..");
+		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		statusPanel.add(lblNewLabel);
 		
 		JPanel panDer = new JPanel();
 		panDer.setBorder(new LineBorder(new Color(0, 0, 0)));
