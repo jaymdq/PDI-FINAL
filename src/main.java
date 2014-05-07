@@ -1,6 +1,7 @@
 import ij.ImagePlus;
 
 import java.awt.Color;
+import java.awt.Dialog.ModalityType;
 import java.awt.EventQueue;
 import java.awt.Font;
 
@@ -9,7 +10,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
-import javax.swing.JSplitPane;
 
 import java.awt.BorderLayout;
 
@@ -26,14 +26,12 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 
 import javax.swing.border.LineBorder;
-import javax.swing.border.BevelBorder;
 import javax.swing.KeyStroke;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.InputEvent;
 
 import javax.swing.JSpinner;
-import javax.swing.JSlider;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.JButton;
 
@@ -41,10 +39,12 @@ import transformacion.TUmbralado;
 import engine.Imagen;
 import engine.Objeto;
 
+import java.awt.Toolkit;
+
 
 public class main {
 
-	private JFrame frame;
+	public static JFrame frmMeatAnalyzer;
 
 	private ImagePlus im;
 	private ImagePlus imTrabajo;
@@ -61,7 +61,7 @@ public class main {
 			public void run() {
 				try {
 					main window = new main();
-					window.frame.setVisible(true);
+					window.frmMeatAnalyzer.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -80,18 +80,19 @@ public class main {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
-		frame.setFont(new Font("Verdana", Font.PLAIN, 14));
-		frame.setResizable(false);
-		frame.setTitle("Meat Analizer - CAIMMI - ROCHA.");
-		int ancho = frame.getToolkit().getScreenSize().width;
-		int alto = frame.getToolkit().getScreenSize().height;
-		frame.setBounds(0,0,ancho - 100, alto - 100);
-		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmMeatAnalyzer = new JFrame();
+		frmMeatAnalyzer.setIconImage(Toolkit.getDefaultToolkit().getImage("icono.png"));
+		frmMeatAnalyzer.setFont(new Font("Verdana", Font.PLAIN, 14));
+		frmMeatAnalyzer.setResizable(false);
+		frmMeatAnalyzer.setTitle("Meat Analyzer - CAIMMI - ROCHA.");
+		int ancho = frmMeatAnalyzer.getToolkit().getScreenSize().width;
+		int alto = frmMeatAnalyzer.getToolkit().getScreenSize().height;
+		frmMeatAnalyzer.setBounds(0,0,ancho - 100, alto - 100);
+		frmMeatAnalyzer.setLocationRelativeTo(null);
+		frmMeatAnalyzer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JMenuBar menuBar = new JMenuBar();
-		frame.setJMenuBar(menuBar);
+		frmMeatAnalyzer.setJMenuBar(menuBar);
 		
 		JMenu mnArchivo = new JMenu("Archivo");
 		menuBar.add(mnArchivo);
@@ -108,12 +109,20 @@ public class main {
 		JMenu mnAyuda = new JMenu("Ayuda");
 		menuBar.add(mnAyuda);
 		
+		JMenuItem mntmAcercaDe = new JMenuItem("Acerca De");
+		mntmAcercaDe.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mostrarAcercaDe();
+			}
+		});
+		mnAyuda.add(mntmAcercaDe);
+		
 		JPanel panDer = new JPanel();
 		panDer.setBorder(new LineBorder(new Color(0, 0, 0)));
 		FlowLayout fl_panDer = (FlowLayout) panDer.getLayout();
 		fl_panDer.setAlignment(FlowLayout.LEADING);
 		fl_panDer.setAlignOnBaseline(true);
-		frame.getContentPane().add(panDer, BorderLayout.EAST);
+		frmMeatAnalyzer.getContentPane().add(panDer, BorderLayout.EAST);
 		
 		spUmbral = new JSpinner();
 		spUmbral.setModel(new SpinnerNumberModel(0, 0, 255, 1));
@@ -128,16 +137,38 @@ public class main {
 		btnProcesar.setFont(new Font("Tahoma", Font.BOLD, 16));
 		panDer.add(btnProcesar);
 		
+		JButton btnNewButton = new JButton("Resetear");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				resetear();
+			}
+		});
+		btnNewButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+		panDer.add(btnNewButton);
+		
 		JPanel panTrabajo = new JPanel();
 		panTrabajo.setBorder(new LineBorder(new Color(0, 0, 0)));
 		panTrabajo.setBackground(Color.WHITE);
-		frame.getContentPane().add(panTrabajo, BorderLayout.CENTER);
+		frmMeatAnalyzer.getContentPane().add(panTrabajo, BorderLayout.CENTER);
 		
 		imSalida = new JLabel("");
 		imSalida.setHorizontalAlignment(SwingConstants.CENTER);
 		panTrabajo.add(imSalida);
 		
 
+	}
+
+	protected void mostrarAcercaDe() {
+		dialogAcercaDe about = new dialogAcercaDe(this);
+		about.setVisible(true);
+		about.setAlwaysOnTop(true);
+		about.setModal(true);
+		about.setModalityType(ModalityType.APPLICATION_MODAL);	
+	}
+
+	protected void resetear() {
+		imTrabajo = im;
+		imSalida.setIcon(new ImageIcon(im.getImage()));
 	}
 
 	//Método que carga la imagenes a usar.
